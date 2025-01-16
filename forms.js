@@ -116,11 +116,14 @@ function Forms() {
     function createFormElement(form, values, desc, sels, newid) {
         var div = document.createElement("div");
         div.addClassName('FormElementLine' + newid);
-        var title = document.createElement("div");
+
+        let title = document.createElement("label");
         title.innerHTML = desc.title;
         title.addClassName('FormElementTitle' + newid);
+
         div.appendChild(title);
         form.appendChild(div);
+
         var field = null;
         //if (Array.isArray(sels)) {
         //if (!sels) {
@@ -267,6 +270,7 @@ function Forms() {
                 field.disabled = true;
             } else {
             }
+            title.htmlFor = field.id;
             return field.id;
         }
     }
@@ -274,6 +278,7 @@ function Forms() {
     var data = {};
     this.createElement = function (parent, data) {
         this.data = data;
+        var form = this.data.form ? this.data.form : {};
         var item = this.data.item ? this.data.item : {};
         var sels = this.data.selects ? this.data.selects : {};
         var desc = this.data.descriptor ? this.data.descriptor : {};
@@ -282,6 +287,7 @@ function Forms() {
         var other = this.data.other ? this.data.other : {};
         var p = parent;
         var newid = randomString(5);
+        //clear elements
         while (p.firstChild) {
             p.removeChild(p.firstChild);
         }
@@ -323,14 +329,26 @@ function Forms() {
             header.addClassName('FormElementHeader' + newid);
             p.appendChild(header);
         }
+
+        //create form form.submit();
+        //Object.keys(object).length;
+        let c = p;
+        if (Object.keys(form).length !== 0) {
+            let f = document.createElement('form');
+            f.id = p.id + "form";
+            f.method = form.method;
+            f.action = form.action;
+            p.appendChild(f);
+            c = f;
+        }
         //create and bind fields
         for (var i in item) {
             if (desc.hasOwnProperty(i)) {
                 var delimiter = document.createElement('div');
                 delimiter.addClassName('FormElementDelimiter' + newid);
-                p.appendChild(delimiter);
+                c.appendChild(delimiter);
 
-                var eid = createFormElement(p, item[i], desc[i], sels[i], newid);
+                var eid = createFormElement(c, item[i], desc[i], sels[i], newid);
                 bindDomElemToObjProp($(eid), item, i, callbacks[i]);
                 if (!data.controls) {
                     data.controls = {};
@@ -342,17 +360,30 @@ function Forms() {
         var btnsdiv = document.createElement("div");
         btnsdiv.addClassName('FormElementLine' + newid);
         for (var i in buttons) {
-            var a = document.createElement('a');
-            var linkText = document.createTextNode(i);
-            a.appendChild(linkText);
-            a.title = i;
-            a.href = "#";
-            a.addClassName('FormElementButtons' + newid);
-            //a.setStyle({padding: '5px', border: '1px solid gray'});
-            a.observe('click', buttons[i]);
-            btnsdiv.appendChild(a);
-            p.appendChild(btnsdiv);
+            if (Object.keys(form).length !== 0) {
+                let b = document.createElement('button');
+                b.innerText = i;
+                if (buttons[i] === "submit" || buttons[i] === "reset" || buttons[i] === "button") {
+                    b.type = buttons[i];
+                } else {
+                    b.type = "button";
+                    b.observe('click', buttons[i]);
+                }
+                b.addClassName('FormElementButtons' + newid);
+                btnsdiv.appendChild(b);
+            } else {
+                let a = document.createElement('a');
+                let linkText = document.createTextNode(i);
+                a.appendChild(linkText);
+                a.title = i;
+                a.href = "#";
+                a.addClassName('FormElementButtons' + newid);
+                //a.setStyle({padding: '5px', border: '1px solid gray'});
+                a.observe('click', buttons[i]);
+                btnsdiv.appendChild(a);
+            }
         }
+        c.appendChild(btnsdiv);
     };
 
     this.touchRow = function (id, obj, multi = false) {
