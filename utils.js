@@ -51,6 +51,13 @@ function Utils() {
         var y = date.getFullYear();
         return '' + y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
     };
+    
+    this.dateToHM = function (date)
+    {
+        var h = date.getHours();
+        var m = date.getMinutes();
+        return '' + (h <= 9 ? '0' + h : h) + ':' + (m <= 9 ? '0' + m : m);
+    };
 
     getRequests = function (uri) {
         var _get = {};
