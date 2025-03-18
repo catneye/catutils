@@ -48,6 +48,7 @@ function Forms() {
         tmpAry.sort();
         while (selElem.options.length > 0) {
             selElem.options[0] = null;
+            //selElem.options.splice(0, 1);
         }
         for (var i = 0; i < tmpAry.length; i++) {
             var op = new Option(tmpAry[i][0], tmpAry[i][1]);
@@ -106,6 +107,8 @@ function Forms() {
                 } else {
                     obj[propertyName] = element.value;
                 }
+            } else if (element.tagName.toUpperCase() === "RADIO-LIST") {
+                obj[propertyName] = element.value;
             }
             if (callback) {
                 callback(element, obj, propertyName);
@@ -125,21 +128,25 @@ function Forms() {
         form.appendChild(div);
 
         var field = null;
-        //if (Array.isArray(sels)) {
-        //if (!sels) {
-        //    sels = {};
-        //}
+        var fieldid = newid + randomString(5);
+
         if (sels) {
-            field = document.createElement("select");
             switch (desc.type) {
                 case 'select':
+                    field = document.createElement("select");
                     field.size = "5";
                     break;
                 case 'dropdown':
+                    field = document.createElement("select");
                     break;
                 case 'multiple':
+                    field = document.createElement("select");
                     field.multiple = "multiple";
                     field.size = "5";
+                    break;
+                case 'radio':
+                    field = document.createElement("radio-list");
+                    field.name = desc.name;
                     break;
             }
             for (var i = 0; i < sels.length; i++) {
@@ -151,7 +158,9 @@ function Forms() {
                 }
                 field.appendChild(option);
             }
-            sortSelect(field);
+            if (field instanceof HTMLSelectElement) {
+                sortSelect(field);
+            }
             div.appendChild(field);
             switch (desc.type) {
                 case 'select':
@@ -174,6 +183,9 @@ function Forms() {
                             }
                         }
                     }
+                    break;
+                case 'radio':
+                    field.value = isNumeric(values) ? parseInt(values) : values;
                     break;
             }
         } else {
@@ -263,7 +275,7 @@ function Forms() {
             }
         }
         if (field !== null) {
-            field.id = newid + randomString(5);
+            field.id = fieldid;
             field.name = desc.name;
             field.addClassName('FormElementField' + newid);
             if (!desc.iseditable) {
@@ -379,7 +391,11 @@ function Forms() {
                 a.href = "#";
                 a.addClassName('FormElementButtons' + newid);
                 //a.setStyle({padding: '5px', border: '1px solid gray'});
-                a.observe('click', buttons[i]);
+                if (typeof buttons[i] === "function") {
+                    a.observe('click', buttons[i]);
+                } else if (typeof buttons[i] === "string") {
+                    a.observe('click', eval(buttons[i]));
+                }
                 btnsdiv.appendChild(a);
             }
         }
