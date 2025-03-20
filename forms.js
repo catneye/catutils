@@ -165,10 +165,12 @@ function Forms() {
             switch (desc.type) {
                 case 'select':
                     //console.log(values);
-                    field.value = isNumeric(values) ? parseInt(values) : values;
+                    //field.value = isNumeric(values) ? parseInt(values) : values;
+                    field.value = (typeof(values)=== "number") ? parseInt(values) : values;
                     break;
                 case 'dropdown':
-                    field.value = isNumeric(values) ? parseInt(values) : values;
+                    //field.value = isNumeric(values) ? parseInt(values) : values;
+                    field.value = (typeof(values)=== "number") ? parseInt(values) : values;
                     break;
                 case 'multiple':
                     //var vals = val.split(";").map(function (x) {
@@ -185,7 +187,8 @@ function Forms() {
                     }
                     break;
                 case 'radio':
-                    field.value = isNumeric(values) ? parseInt(values) : values;
+                    //field.checked = isNumeric(values) ? parseInt(values) : values;
+                    field.checked = (typeof(values)=== "number") ? parseInt(values) : values;
                     break;
             }
         } else {

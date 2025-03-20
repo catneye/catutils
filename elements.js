@@ -17,15 +17,35 @@ class RadioList extends HTMLElement {
         super.appendChild(this.wrapper);
     }
 
+    get name() {
+        return this.name;
+    }
+
     set name(name) {
         this.name = name;
     }
-    set value(value) {
+
+    get checked() {
+        console.log("get checked");
+        return this.value;
+    }
+
+    set checked(value) {
+        console.log("set checked" + value);
         this.value = value;
+        for (var i = 0; i < this.options.length; i++) {
+            //unsafe for numbers
+            if (this.options[i].value == value) {
+                this.options[i].checked = true;
+                break;
+            }
+        }
+        //let e = document.querySelector('input[name="'+this.name+'"]:value="'+value+'"');//document.getElementById(value);
+        //e.checked = true;
     }
 
     appendChild(child) {
-        var wrap=document.createElement("span");
+        var wrap = document.createElement("span");
         var option = document.createElement("input");
         option.setAttribute("type", "radio");
         //option.setAttribute("name", this.name);
@@ -40,7 +60,7 @@ class RadioList extends HTMLElement {
         var label = document.createElement("label");
         label.htmlFor = child.value;
         label.innerHTML = child.text;
-        
+
         wrap.appendChild(option);
         wrap.appendChild(label);
         this.wrapper.appendChild(wrap);
