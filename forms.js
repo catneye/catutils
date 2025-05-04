@@ -67,7 +67,7 @@ function Forms() {
     }
 
     function isNumeric(num) {
-        return !isNaN(num);
+        return (typeof (num) === "number");//!isNaN(num);
     }
 
     function getSelectValues(select) {
@@ -128,7 +128,7 @@ function Forms() {
         form.appendChild(div);
 
         var field = null;
-        var fieldid = newid + randomString(5);
+        var fieldid = newid + "-" + randomString(5);
 
         if (sels) {
             switch (desc.type) {
@@ -146,7 +146,7 @@ function Forms() {
                     break;
                 case 'radio':
                     field = document.createElement("radio-list");
-                    field.name = desc.name;
+                    field.name = newid;
                     break;
             }
             for (var i = 0; i < sels.length; i++) {
@@ -164,18 +164,14 @@ function Forms() {
             div.appendChild(field);
             switch (desc.type) {
                 case 'select':
-                    //console.log(values);
                     //field.value = isNumeric(values) ? parseInt(values) : values;
-                    field.value = (typeof(values)=== "number") ? parseInt(values) : values;
+                    field.value = (typeof (values) === "number") ? parseInt(values) : values;
                     break;
                 case 'dropdown':
                     //field.value = isNumeric(values) ? parseInt(values) : values;
-                    field.value = (typeof(values)=== "number") ? parseInt(values) : values;
+                    field.value = (typeof (values) === "number") ? parseInt(values) : values;
                     break;
                 case 'multiple':
-                    //var vals = val.split(";").map(function (x) {
-                    //    return isNumeric(x) ? parseInt(x) : x;
-                    //});
                     if (Array.isArray(values)) {
                         var vals = values;
                         for (var i = 0, l = field.options.length; i < l; i++) {
@@ -188,7 +184,7 @@ function Forms() {
                     break;
                 case 'radio':
                     //field.checked = isNumeric(values) ? parseInt(values) : values;
-                    field.checked = (typeof(values)=== "number") ? parseInt(values) : values;
+                    field.checked = (typeof (values) === "number") ? parseInt(values) : values;
                     break;
             }
         } else {
@@ -231,45 +227,19 @@ function Forms() {
                     field.setStyle({'height': '150px'});
                     field.value = values;
                     break;
-                case 'date':
+                case 'date'://2025-03-24
                     field = document.createElement("input");
-                    //field.setAttribute("type", "datetime-local");
-                    field.setAttribute("type", "text");
+                    field.setAttribute("type", "date");
                     field.value = values;
-                    if (desc.iseditable) {
-                        var calbtn = document.createElement("span");
-                        calbtn.setStyle({'width': '14px', 'height': '14px', 'border': 'solid lightgray 1px'});
-                        calbtn.innerHTML = "&hellip;";
-                        div.appendChild(calbtn);
-                        var c = new Calendar({
-                            outputFields: [field],
-                            onHideCallback: function (date, e) {
-                                //field.value=date;
-                                var event = new Event('change');
-                                field.dispatchEvent(event);
-                            },
-                            //dateField: field,
-                            popupTriggerElement: calbtn,
-                            parentElement: div,
-                            withTime: false,
-                            hideOnClickElsewhere: true,
-                            hideOnClickOnDay: true,
-                            language: 'ru'
-                        });
-                    }
                     div.appendChild(field);
-                    /*
-                     field.observe('click', function (event) {
-                     NewCssCal(field.id, "yyyyMMdd", "dropdown", true, "24", true);
-                     return false;
-                     });*/
-                    /*if (desc.iseditable) {
-                     c.popupTriggerElementEnabled = true;
-                     } else {
-                     c.popupTriggerElementEnabled = false;
-                     }*/
                     break;
-                case "time":
+                case 'datetime'://2025-03-31T10:44:46
+                    field = document.createElement("input");
+                    field.setAttribute("type", "datetime-local");
+                    field.value = values;
+                    div.appendChild(field);
+                    break;
+                case "time"://10:44:46
                     field = document.createElement("input");
                     field.setAttribute("type", "time");
                     div.appendChild(field);
@@ -279,6 +249,7 @@ function Forms() {
         }
         if (field !== null) {
             field.id = fieldid;
+            field.baseid = newid;
             field.name = desc.name;
             field.addClassName('FormElementField' + newid);
             if (!desc.iseditable) {
@@ -291,7 +262,7 @@ function Forms() {
     }
 
     var data = {};
-    this.createElement = function (parent, data) {
+    this.createElement = function (parent, data, customid) {
         this.data = data;
         var form = this.data.form ? this.data.form : {};
         var item = this.data.item ? this.data.item : {};
@@ -301,7 +272,8 @@ function Forms() {
         var buttons = this.data.buttons ? this.data.buttons : {};
         var other = this.data.other ? this.data.other : {};
         var p = parent;
-        var newid = randomString(5);
+        var newid = customid ? customid : randomString(5);
+        var fieldid = newid + randomString(5);
         //clear elements
         while (p.firstChild) {
             p.removeChild(p.firstChild);
@@ -375,6 +347,7 @@ function Forms() {
         var btnsdiv = document.createElement("div");
         btnsdiv.addClassName('FormElementLine' + newid);
         for (var i in buttons) {
+            let btnid=fieldid+ randomString(5);
             if (Object.keys(form).length !== 0) {
                 let b = document.createElement('button');
                 b.innerText = i;
@@ -385,6 +358,8 @@ function Forms() {
                     b.observe('click', buttons[i]);
                 }
                 b.addClassName('FormElementButtons' + newid);
+                b.id = "FormElementButton" + btnid;
+                b.baseid = newid;
                 btnsdiv.appendChild(b);
             } else {
                 let a = document.createElement('a');
@@ -393,6 +368,8 @@ function Forms() {
                 a.title = i;
                 a.href = "#";
                 a.addClassName('FormElementButtons' + newid);
+                a.id = "FormElementButton" + btnid;
+                a.baseid = newid;
                 //a.setStyle({padding: '5px', border: '1px solid gray'});
                 if (typeof buttons[i] === "function") {
                     a.observe('click', buttons[i]);
