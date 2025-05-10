@@ -272,12 +272,13 @@ function Forms() {
         var buttons = this.data.buttons ? this.data.buttons : {};
         var other = this.data.other ? this.data.other : {};
         var p = parent;
-        var newid = customid ? customid : randomString(5);
+        var newid = customid ? customid.replace(".","-") : randomString(5);
         var fieldid = newid + randomString(5);
         //clear elements
         while (p.firstChild) {
             p.removeChild(p.firstChild);
         }
+
         //styles
         var styleheader = document.createElement('style');
         styleheader.type = 'text/css';
@@ -310,22 +311,67 @@ function Forms() {
                 + (other.FormElementButtons ? other.FormElementButtons : '{margin: 10px;}');
         p.appendChild(stylebuttons);
         //header
+        let container = document.createElement('div');
+        container.id = "wrapper-" + newid;
+
         if (other.header) {
-            var header = document.createElement('div');
-            header.innerHTML = other.header;
+            let header = document.createElement('div');
+            let headertext = document.createElement('span');
+            let headersign = document.createElement('span');
+            headersign.style.margin="1px";
+            headertext.style.margin="1px";
+            if (other.collapsable) {
+                header.collapsable = true;
+                header.collapsed = true;
+                let sign = "\u25be";
+                let a = document.createElement('a');
+                a.text = sign;
+                a.href = "#";
+                a.id = "collapse-" + newid;
+                a.addEventListener("click", function (e) {
+                    let eid = container.id;
+                    let aid = a.id;
+                    let cont = document.getElementById(eid);
+                    if (cont.collapsed) {
+                        cont.style.visibility = "visible";
+                        cont.collapsed = false;
+                        a.text = "\u25b4";
+
+                    } else {
+                        cont.style.visibility = "collapse";
+                        cont.collapsed = true;
+                        a.text = "\u25be";
+                    }
+                });
+                headersign.appendChild(a);
+
+                container.style.visibility = "collapse";
+                container.collapsed = true;
+            } else {
+                header.collapsable = false;
+                let sign = "\u25ab";
+                let linkText = document.createTextNode(sign);
+                headersign.appendChild(linkText);
+            }
+            header.appendChild(headersign);
+
+            let linkText = document.createTextNode(other.header);
+            headertext.appendChild(linkText);
             header.addClassName('FormElementHeader' + newid);
+            header.appendChild(headertext);
             p.appendChild(header);
         }
+        p.appendChild(container);
 
         //create form form.submit();
         //Object.keys(object).length;
-        let c = p;
+        let c = container;
         if (Object.keys(form).length !== 0) {
             let f = document.createElement('form');
-            f.id = p.id + "form";
+            f.id = container.id + "form";
             f.method = form.method;
             f.action = form.action;
-            p.appendChild(f);
+            container.appendChild(f);
             c = f;
         }
         //create and bind fields
@@ -347,7 +393,7 @@ function Forms() {
         var btnsdiv = document.createElement("div");
         btnsdiv.addClassName('FormElementLine' + newid);
         for (var i in buttons) {
-            let btnid=fieldid+ randomString(5);
+            let btnid = fieldid + randomString(5);
             if (Object.keys(form).length !== 0) {
                 let b = document.createElement('button');
                 b.innerText = i;
