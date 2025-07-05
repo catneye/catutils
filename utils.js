@@ -51,20 +51,56 @@ function Utils() {
         var y = date.getFullYear();
         return '' + y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
     };
-    
+
     this.dateToHM = function (date)
     {
         var h = date.getHours();
         var m = date.getMinutes();
         return '' + (h <= 9 ? '0' + h : h) + ':' + (m <= 9 ? '0' + m : m);
     };
-    
+
     this.dateToHMS = function (date)
     {
         var h = date.getHours();
         var m = date.getMinutes();
         var s = date.getSeconds();
-        return '' + (h <= 9 ? '0' + h : h) + ':' + (m <= 9 ? '0' + m : m)+ ':' + (s <= 9 ? '0' + s : s);
+        return '' + (h <= 9 ? '0' + h : h) + ':' + (m <= 9 ? '0' + m : m) + ':' + (s <= 9 ? '0' + s : s);
+    };
+
+    this.getLocalDate = function (dateString) {
+        let dateVal;
+        let resDate;
+        if (dateString) {
+            dateVal = new Date(dateString);
+        } else {
+            dateVal = new Date();
+        }
+        let day = dateVal.getDate().toString().padStart(2, "0");
+        let month = (1 + dateVal.getMonth()).toString().padStart(2, "0");
+        let hour = dateVal.getHours().toString().padStart(2, "0");
+        let minute = dateVal.getMinutes().toString().padStart(2, "0");
+        let sec = dateVal.getSeconds().toString().padStart(2, "0");
+        let ms = dateVal.getMilliseconds().toString().padStart(3, "0");
+        resDate = dateVal.getFullYear() + "-" + (month) + "-" + (day) + "T" + (hour) + ":" + (minute) + ":" + (sec) + "." + (ms);
+        return resDate;
+    };
+    
+    this.getMidnight = function (dateString) {
+        let dateVal;
+        let resDate;
+        if (dateString) {
+            dateVal = new Date(dateString);
+        } else {
+            dateVal = new Date();
+        }
+        let day = dateVal.getDate().toString().padStart(2, "0");
+        let month = (1 + dateVal.getMonth()).toString().padStart(2, "0");
+        let hour = "00";
+        let minute = "00";
+        let sec = "00";
+        let ms = "000";
+        resDate = dateVal.getFullYear() + "-" + (month) + "-" + (day) + "T" + (hour) + ":" + (minute) + ":" + (sec) + "." + (ms);
+        return resDate;
     };
 
     getRequests = function (uri) {

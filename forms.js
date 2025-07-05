@@ -272,7 +272,8 @@ function Forms() {
         var buttons = this.data.buttons ? this.data.buttons : {};
         var other = this.data.other ? this.data.other : {};
         var p = parent;
-        var newid = customid ? customid.replace(".","-") : randomString(5);
+        //var newid = customid ? customid.replace(".", "-") : randomString(5);
+        var newid = customid ? customid : randomString(5);
         var fieldid = newid + randomString(5);
         //clear elements
         while (p.firstChild) {
@@ -280,6 +281,11 @@ function Forms() {
         }
 
         //styles
+        var stylecontainer = document.createElement('style');
+        stylecontainer.type = 'text/css';
+        stylecontainer.innerHTML = '.FormElementContainer' + newid + ' '
+                + (other.FormElementContainer ? other.FormElementContainer : '{display:table;}');
+        p.appendChild(stylecontainer);
         var styleheader = document.createElement('style');
         styleheader.type = 'text/css';
         styleheader.innerHTML = '.FormElementHeader' + newid + ' '
@@ -313,13 +319,14 @@ function Forms() {
         //header
         let container = document.createElement('div');
         container.id = "wrapper-" + newid;
+        container.addClassName('FormElementContainer' + newid);
 
         if (other.header) {
             let header = document.createElement('div');
             let headertext = document.createElement('span');
             let headersign = document.createElement('span');
-            headersign.style.margin="1px";
-            headertext.style.margin="1px";
+            headersign.style.margin = "1px";
+            headertext.style.margin = "1px";
             if (other.collapsable) {
                 header.collapsable = true;
                 header.collapsed = true;
@@ -363,8 +370,6 @@ function Forms() {
         }
         p.appendChild(container);
 
-        //create form form.submit();
-        //Object.keys(object).length;
         let c = container;
         if (Object.keys(form).length !== 0) {
             let f = document.createElement('form');

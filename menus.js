@@ -24,10 +24,10 @@ function Menus() {
     this.showMenu = function (idmenu) {
         var arrmenus = $$('div[id^="' + preffix + '"]');
         arrmenus.forEach(function (element, index, array) {
-            element.hide();
+            element.style.visibility= "collapse";
         });
         if (idmenu) {
-            $(idmenu).show();
+            $(idmenu).style.visibility= "visible";
         }
     };
     this.showTab = function (idtab, tabpreffix) {
