@@ -116,19 +116,30 @@ function Forms() {
         });
     }
 
-    function createFormElement(form, values, desc, sels, newid) {
+    function createFormElement(form, values, desc, sels, style, newid) {
+        var field = null;
+        var fieldid = newid + "-" + randomString(5);
+
         var div = document.createElement("div");
         div.addClassName('FormElementLine' + newid);
+        if (style && style.label && style.field) {
+            var stylecontainer = document.createElement('style');
+            stylecontainer.type = 'text/css';
+            stylecontainer.innerHTML = '#' + fieldid + style.field;
+            div.appendChild(stylecontainer);
 
+            var stylecontainer = document.createElement('style');
+            stylecontainer.type = 'text/css';
+            stylecontainer.innerHTML = '#' + fieldid + "-label" + style.label;
+            div.appendChild(stylecontainer);
+        }
         let title = document.createElement("label");
         title.innerHTML = desc.title;
         title.addClassName('FormElementTitle' + newid);
+        title.id = fieldid + "-label";
 
         div.appendChild(title);
         form.appendChild(div);
-
-        var field = null;
-        var fieldid = newid + "-" + randomString(5);
 
         if (sels) {
             switch (desc.type) {
@@ -222,9 +233,8 @@ function Forms() {
                 case 'text':
                     field = document.createElement("textarea");
                     div.appendChild(field);
-                    field.cols = "40";
-                    field.rows = "3";
-                    field.setStyle({'height': '150px'});
+                    //field.cols = "40";
+                    //field.rows = "3";
                     field.value = values;
                     break;
                 case 'date'://2025-03-24
@@ -271,8 +281,8 @@ function Forms() {
         var callbacks = this.data.callbacks ? this.data.callbacks : {};
         var buttons = this.data.buttons ? this.data.buttons : {};
         var other = this.data.other ? this.data.other : {};
+        var style = this.data.style ? this.data.style : {};
         var p = parent;
-        //var newid = customid ? customid.replace(".", "-") : randomString(5);
         var newid = customid ? customid : randomString(5);
         var fieldid = newid + randomString(5);
         //clear elements
@@ -284,37 +294,37 @@ function Forms() {
         var stylecontainer = document.createElement('style');
         stylecontainer.type = 'text/css';
         stylecontainer.innerHTML = '.FormElementContainer' + newid + ' '
-                + (other.FormElementContainer ? other.FormElementContainer : '{display:table;}');
+                + (style.FormElementContainer ? style.FormElementContainer : '{display:table;}');
         p.appendChild(stylecontainer);
         var styleheader = document.createElement('style');
         styleheader.type = 'text/css';
         styleheader.innerHTML = '.FormElementHeader' + newid + ' '
-                + (other.FormElementHeader ? other.FormElementHeader : '{border-bottom: dashed 1px gray;}');
+                + (style.FormElementHeader ? style.FormElementHeader : '{border-bottom: dashed 1px gray;}');
         p.appendChild(styleheader);
         var styleline = document.createElement('style');
         styleline.type = 'text/css';
         styleline.innerHTML = '.FormElementLine' + newid + ' '
-                + (other.FormElementLine ? other.FormElementLine : '{margin: 5px; display: table; width: 100%; }');
+                + (style.FormElementLine ? style.FormElementLine : '{margin: 5px; display: table; width: 100%; }');
         p.appendChild(styleline);
         var styletitle = document.createElement('style');
         styletitle.type = 'text/css';
         styletitle.innerHTML = '.FormElementTitle' + newid + ' '
-                + (other.FormElementTitle ? other.FormElementTitle : '{display: table-cell; padding-left: 5px; width: 29%; vertical-align: top; }');
+                + (style.FormElementTitle ? style.FormElementTitle : '{display: table-cell; padding-left: 5px; width: 29%; vertical-align: top; }');
         p.appendChild(styletitle);
         var stylefield = document.createElement('style');
         stylefield.type = 'text/css';
         stylefield.innerHTML = '.FormElementField' + newid + ' '
-                + (other.FormElementField ? other.FormElementField : '{display: table-cell; padding-left: 5px; border: solid 1px gray; border-radius: 3px; width: 90%;}');
+                + (style.FormElementField ? style.FormElementField : '{display: table-cell; padding-left: 5px; border: solid 1px gray; border-radius: 3px; width: 90%;}');
         p.appendChild(stylefield);
         var styledelimiter = document.createElement('style');
         styledelimiter.type = 'text/css';
         styledelimiter.innerHTML = '.FormElementDelimiter' + newid + ' '
-                + (other.FormElementDelimiter ? other.FormElementDelimiter : '{width: 100%; height: 5px;}');
+                + (style.FormElementDelimiter ? style.FormElementDelimiter : '{width: 100%; height: 5px;}');
         p.appendChild(styledelimiter);
         var stylebuttons = document.createElement('style');
         stylebuttons.type = 'text/css';
         stylebuttons.innerHTML = '.FormElementButtons' + newid + ' '
-                + (other.FormElementButtons ? other.FormElementButtons : '{margin: 10px;}');
+                + (style.FormElementButtons ? style.FormElementButtons : '{margin: 10px;}');
         p.appendChild(stylebuttons);
         //header
         let container = document.createElement('div');
@@ -386,7 +396,7 @@ function Forms() {
                 delimiter.addClassName('FormElementDelimiter' + newid);
                 c.appendChild(delimiter);
 
-                var eid = createFormElement(c, item[i], desc[i], sels[i], newid);
+                var eid = createFormElement(c, item[i], desc[i], sels[i], style[i], newid, );
                 bindDomElemToObjProp($(eid), item, i, callbacks[i]);
                 if (!data.controls) {
                     data.controls = {};
@@ -421,7 +431,6 @@ function Forms() {
                 a.addClassName('FormElementButtons' + newid);
                 a.id = "FormElementButton" + btnid;
                 a.baseid = newid;
-                //a.setStyle({padding: '5px', border: '1px solid gray'});
                 if (typeof buttons[i] === "function") {
                     a.observe('click', buttons[i]);
                 } else if (typeof buttons[i] === "string") {
